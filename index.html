@@ -18,17 +18,28 @@ Papa.parse('https://thechesirecat.github.io/recTrack/output.csv', {
     complete: function(results) {
         var data = results.data;
 
+        // Group data by location
+        var dataByLocation = {};
+        data.forEach(function(row) {
+            if (!(row.location_name in dataByLocation)) {
+                dataByLocation[row.location_name] = [];
+            }
+            dataByLocation[row.location_name].push(row);
+        });
+
         // Prepare data for Plotly
-        var traces = [{
-            x: data.map(row => new Date(row.timestamp_scrape)),
-            y: data.map(row => row.last_count),
-            mode: 'lines',
-            type: 'scatter',
-            name: 'Last Count'
-        }];
+        var traces = Object.keys(dataByLocation).map(function(location) {
+            return {
+                x: dataByLocation[location].map(row => new Date(row.timestamp_scrape)),
+                y: dataByLocation[location].map(row => row.percentage),
+                mode: 'lines',
+                type: 'scatter',
+                name: location
+            };
+        });
 
         var layout = {
-            title: 'Last Count Timeseries'
+            title: 'Percentage Timeseries by Location'
         };
 
         // Plot data
