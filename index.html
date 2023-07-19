@@ -31,7 +31,7 @@ Papa.parse('https://thechesirecat.github.io/recTrack/output.csv', {
         var traces = Object.keys(dataByLocation).map(function(location) {
             return {
                 x: dataByLocation[location].map(row => new Date(row.timestamp_scrape)),
-                y: dataByLocation[location].map(row => row.percentage),
+                y: dataByLocation[location].map(row => row.last_count),
                 mode: 'lines',
                 type: 'scatter',
                 name: location
