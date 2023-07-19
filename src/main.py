@@ -3,6 +3,7 @@ import requests
 import datetime
 import csv
 import re
+import pytz
 
 base_url = "https://recreation.northeastern.edu/"
 base_content = requests.get(base_url).content
@@ -17,6 +18,9 @@ data_content = requests.get(data_url, headers=headers)
 data_soup = bs(data_content.content, "html.parser")
 
 location_divs = data_soup.find_all('div', {'class': 'col-md-3 col-sm-6'})
+
+# Define Boston time zone
+boston_tz = pytz.timezone('America/New_York')
 
 # Open the file in append mode
 with open('output.csv', 'a', newline='') as file:
@@ -43,6 +47,7 @@ with open('output.csv', 'a', newline='') as file:
             updated = updated_search.group(1) if updated_search else None
 
             open_boolean = True if "(Open)" in location_info.decode_contents() else False
-            writer.writerow([datetime.datetime.now(), percentage, location_name, last_count, updated, open_boolean])
+            # Use Boston time for the timestamp
+            writer.writerow([datetime.datetime.now(boston_tz), percentage, location_name, last_count, updated, open_boolean])
         except Exception as e:
             print(f"Error while processing a location: {e}")
