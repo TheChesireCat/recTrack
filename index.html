@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Visualization</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
+</head>
+<body>
+
+<div id="timeseriesPlot"></div>
+
+<script>
+// Parse CSV string
+Papa.parse('https://thechesirecat.github.io/recTrack/output.csv', {
+    download: true,
+    header: true,
+    dynamicTyping: true,
+    complete: function(results) {
+        var data = results.data;
+
+        // Prepare data for Plotly
+        var traces = [{
+            x: data.map(row => new Date(row.timestamp_scrape)),
+            y: data.map(row => row.last_count),
+            mode: 'lines',
+            type: 'scatter',
+            name: 'Last Count'
+        }];
+
+        var layout = {
+            title: 'Last Count Timeseries'
+        };
+
+        // Plot data
+        Plotly.newPlot('timeseriesPlot', traces, layout);
+    }
+});
+</script>
+
+</body>
+</html>
