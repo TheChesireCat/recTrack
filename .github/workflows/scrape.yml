@@ -12,6 +12,9 @@ jobs:
   main:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v2
         with:
@@ -30,10 +33,4 @@ jobs:
       - name: Run script
         run: python src/main.py
 
-      - name: Commit and push changes
-        run: |
-          git diff
-          git config --global user.email "aliceoxenbury@gmail.com"
-          git config --global user.name "Ankit"
-          git commit -am "Update data" || echo "No changes to commit"
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/TheChesireCat/recTrack.git
+      - uses: stefanzweifel/git-auto-commit-action@v4
