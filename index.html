@@ -50,7 +50,7 @@ Papa.parse('https://thechesirecat.github.io/recTrack/output.csv', {
         // Calculate the date range to cover one month around the data
         var rangeStart = new Date(minDate.getFullYear(), minDate.getMonth() - 1, minDate.getDate());
         var rangeEnd = new Date(maxDate.getFullYear(), maxDate.getMonth() + 1, maxDate.getDate());
-
+        console.log([rangeStart.toISOString(), rangeEnd.toISOString()]);
         var layout = {
             title: 'Last Count Timeseries by Location',
             xaxis: {
