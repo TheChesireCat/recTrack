@@ -20,17 +20,26 @@ Papa.parse('https://thechesirecat.github.io/recTrack/output.csv', {
 
         // Group data by location
         var dataByLocation = {};
+        var minDate = new Date();
+        var maxDate = new Date(0);
         data.forEach(function(row) {
+            row.timestamp_scrape = new Date(row.timestamp_scrape);  // Convert to Date
             if (!(row.location_name in dataByLocation)) {
                 dataByLocation[row.location_name] = [];
             }
             dataByLocation[row.location_name].push(row);
+            if (row.timestamp_scrape < minDate) {
+                minDate = row.timestamp_scrape;
+            }
+            if (row.timestamp_scrape > maxDate) {
+                maxDate = row.timestamp_scrape;
+            }
         });
 
         // Prepare data for Plotly
         var traces = Object.keys(dataByLocation).map(function(location) {
             return {
-                x: dataByLocation[location].map(row => new Date(row.timestamp_scrape)),
+                x: dataByLocation[location].map(row => row.timestamp_scrape),
                 y: dataByLocation[location].map(row => row.last_count),
                 mode: 'lines',
                 type: 'scatter',
@@ -38,8 +47,16 @@ Papa.parse('https://thechesirecat.github.io/recTrack/output.csv', {
             };
         });
 
+        // Calculate the date range to cover one month around the data
+        var rangeStart = new Date(minDate.getFullYear(), minDate.getMonth() - 1, minDate.getDate());
+        var rangeEnd = new Date(maxDate.getFullYear(), maxDate.getMonth() + 1, maxDate.getDate());
+
         var layout = {
-            title: 'Percentage Timeseries by Location'
+            title: 'Last Count Timeseries by Location',
+            xaxis: {
+                range: [rangeStart.toISOString(), rangeEnd.toISOString()],
+                type: 'date'
+            }
         };
 
         // Plot data
