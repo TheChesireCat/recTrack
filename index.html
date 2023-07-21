@@ -54,9 +54,12 @@
                     return {
                         x: dataByLocation[location].map(row => row.updated),
                         y: dataByLocation[location].map(row => row.last_count),
-                        mode: 'lines',
+                        mode: 'lines+markers',
                         type: 'scatter',
-                        name: location
+                        name: location,
+                        line: {
+                            'shape': 'spline',
+                        }
                     };
                 });
                 minDate = new Date("2023-07-19T18:50:00");
