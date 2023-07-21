@@ -1,69 +1,83 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Data Visualization</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
+    <style>
+        body, html, #timeseriesPlot {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
+
 <body>
 
-<div id="timeseriesPlot"></div>
+    <div id="timeseriesPlot"></div>
 
-<script>
-// Parse CSV string
-Papa.parse('https://thechesirecat.github.io/recTrack/output.csv', {
-    download: true,
-    header: true,
-    dynamicTyping: true,
-    complete: function(results) {
-        var data = results.data;
+    <script>
+        // Parse CSV string
+        Papa.parse('https://thechesirecat.github.io/recTrack/output.csv', {
+            download: true,
+            header: true,
+            dynamicTyping: true,
+            complete: function (results) {
+                var data = results.data;
 
-        // Group data by location
-        var dataByLocation = {};
-        var minDate = new Date();
-        var maxDate = new Date(0);
-        data.forEach(function(row) {
-            row.timestamp_scrape = new Date(row.timestamp_scrape);  // Convert to Date
-            if (!(row.location_name in dataByLocation)) {
-                dataByLocation[row.location_name] = [];
-            }
-            dataByLocation[row.location_name].push(row);
-            if (row.timestamp_scrape < minDate) {
-                minDate = row.timestamp_scrape;
-            }
-            if (row.timestamp_scrape > maxDate) {
-                maxDate = row.timestamp_scrape;
+                // Group data by location
+                var dataByLocation = {};
+                var minDate = new Date();
+                var maxDate = new Date(0);
+                data.forEach(function (row) {
+                    row.timestamp_scrape = new Date(row.timestamp_scrape);  // Convert to Date
+                    if (!(row.location_name in dataByLocation)) {
+                        dataByLocation[row.location_name] = [];
+                    }
+                    dataByLocation[row.location_name].push(row);
+                    if (isNaN(row.timestamp_scrape.getTime())) {
+                        console.error('Invalid timestamp:', row.timestamp_scrape);
+                    } else {
+                        if (row.timestamp_scrape < minDate) {
+                            minDate = row.timestamp_scrape;
+                        }
+                        if (row.timestamp_scrape > maxDate) {
+                            maxDate = row.timestamp_scrape;
+                        }
+                    }});
+
+                // Prepare data for Plotly
+                var traces = Object.keys(dataByLocation).map(function (location) {
+                    return {
+                        x: dataByLocation[location].map(row => row.timestamp_scrape),
+                        y: dataByLocation[location].map(row => row.last_count),
+                        mode: 'lines',
+                        type: 'scatter',
+                        name: location
+                    };
+                });
+                minDate = new Date("2023-07-19T19:00:00");
+                var layout = {
+                    title: 'Last Count Timeseries by Location',
+                    xaxis: {
+                        range: [minDate, maxDate],
+                        type: 'date'
+                    },
+                    yaxis: {
+                        type: 'linear',
+                        autorange: true
+                    }
+                };
+
+                // Plot data
+                Plotly.newPlot('timeseriesPlot', traces, layout);
             }
         });
-
-        // Prepare data for Plotly
-        var traces = Object.keys(dataByLocation).map(function(location) {
-            return {
-                x: dataByLocation[location].map(row => row.timestamp_scrape),
-                y: dataByLocation[location].map(row => row.last_count),
-                mode: 'lines',
-                type: 'scatter',
-                name: location
-            };
-        });
-
-        // Calculate the date range to cover one month around the data
-        var rangeStart = new Date(minDate.getFullYear(), minDate.getMonth() - 1, minDate.getDate());
-        var rangeEnd = new Date(maxDate.getFullYear(), maxDate.getMonth() + 1, maxDate.getDate());
-        console.log([rangeStart.toISOString(), rangeEnd.toISOString()]);
-        var layout = {
-            title: 'Last Count Timeseries by Location',
-            xaxis: {
-                range: [rangeStart.toISOString(), rangeEnd.toISOString()],
-                type: 'date'
-            }
-        };
-
-        // Plot data
-        Plotly.newPlot('timeseriesPlot', traces, layout);
-    }
-});
-</script>
+    </script>
 
 </body>
+
 </html>
