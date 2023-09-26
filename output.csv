@@ -33945,3 +33945,11 @@ timestamp_scrape,percentage,location_name,last_count,updated,open_boolean
 2023-09-25 20:27:44.280332-04:00,100,Marino Center - 3rd Floor Weight Room,76,09/25/2023 08:20 PM,True
 2023-09-25 20:27:44.280504-04:00,66.666666666667,Marino Center - 3rd Floor Select & Cardio,60,09/25/2023 08:20 PM,True
 2023-09-25 20:27:44.280672-04:00,80,SquashBusters - 4th Floor,48,09/25/2023 07:48 PM,True
+2023-09-25 21:31:44.755525-04:00,36.363636363636,Studio A,12,09/25/2023 08:43 PM,True
+2023-09-25 21:31:44.755738-04:00,0,Studio B,18,09/25/2023 08:43 PM,False
+2023-09-25 21:31:44.755909-04:00,72.380952380952,Marino Center - 2nd Floor,76,09/25/2023 08:20 PM,True
+2023-09-25 21:31:44.756124-04:00,100,Marino Center - Gymnasium,76,09/25/2023 08:20 PM,True
+2023-09-25 21:31:44.756289-04:00,0,Functional Training Area,0,09/25/2023 02:58 PM,True
+2023-09-25 21:31:44.756456-04:00,100,Marino Center - 3rd Floor Weight Room,77,09/25/2023 08:47 PM,True
+2023-09-25 21:31:44.756625-04:00,68.888888888889,Marino Center - 3rd Floor Select & Cardio,62,09/25/2023 08:47 PM,True
+2023-09-25 21:31:44.756789-04:00,70,SquashBusters - 4th Floor,42,09/25/2023 09:17 PM,True
