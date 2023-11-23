@@ -18,18 +18,20 @@
 </head>
 
 <body>
-
+    <div class="loader" id="loader">Loading, Please Wait</div>
     <div id="timeseriesPlot"></div>
 
     <script>
+        document.getElementById('timeseriesPlot').style.display = 'none';
         // Parse CSV string
         Papa.parse('https://thechesirecat.github.io/recTrack/output.csv', {
             download: true,
             header: true,
             dynamicTyping: true,
             complete: function (results) {
+                document.getElementById('loader').style.display = 'none';
                 var data = results.data;
-
+                document.getElementById('timeseriesPlot').style.display = 'block';
                 // Group data by location
                 var dataByLocation = {};
                 var minDate = new Date();
