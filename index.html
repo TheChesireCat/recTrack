@@ -13,20 +13,73 @@
         margin: 0;
         padding: 0;
       }
+
+      .loader {
+        position: fixed;
+        /* Position relative to the viewport */
+        top: 50%;
+        /* Center vertically */
+        left: 50%;
+        /* Center horizontally */
+        transform: translate(-50%, -50%);
+        /* Offset the loader to the exact center */
+        z-index: 1000;
+        /* Ensure it's above other content */
+      }
+
+      .loader-inner {
+        border: 5px solid #f3f3f3;
+        /* Light grey border */
+        border-top: 5px solid #3498db;
+        /* Blue border top */
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        animation: spin 2s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loader-text {
+        position: absolute;
+        top: 130%;
+        /* Position the text below the loader */
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 20px;
+        /* Large text size */
+        color: #000;
+      }
     </style>
   </head>
 
   <body>
+    <div class="loader" id="loader">
+      <div class="loader-inner"></div>
+      <div class="loader-text">Loading...</div>
+    </div>
     <div id="timeseriesPlot"></div>
 
     <script>
+      document.getElementById("timeseriesPlot").style.display = "none";
       // Parse CSV string
       Papa.parse("https://thechesirecat.github.io/recTrack/output.csv", {
         download: true,
         header: true,
         dynamicTyping: true,
         complete: function (results) {
+          document.getElementById("loader").style.display = "none";
+
           var data = results.data;
+          document.getElementById("timeseriesPlot").style.display = "block";
 
           // Group data by location
           var dataByLocation = {};
@@ -52,16 +105,13 @@
             return {
               x: dataByLocation[location].map((row) => row.updated),
               y: dataByLocation[location].map((row) => row.last_count),
-              mode: "lines+markers",
               type: "scatter",
               name: location,
-              line: {
-                shape: "spline",
-              },
             };
           });
           minDate = new Date("2023-07-19T18:50:00");
-
+          
+          console.log([minDate, maxDate]);
           function addDays(date, days) {
             var result = new Date(date);
             result.setDate(result.getDate() + days);
@@ -109,10 +159,8 @@
               type: "linear",
               autorange: true,
             },
-            shapes: shapes, // Add the shapes to the layout
+            shapes: shapes,
           };
-
-          console.log([minDate, maxDate]);
 
           // Plot data
           Plotly.newPlot("timeseriesPlot", traces, layout);
