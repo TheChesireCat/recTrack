@@ -1,171 +1,87 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Data Visualization</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
     <style>
-      body,
-      html,
-      #timeseriesPlot {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-
-      .loader {
-        position: fixed;
-        /* Position relative to the viewport */
-        top: 50%;
-        /* Center vertically */
-        left: 50%;
-        /* Center horizontally */
-        transform: translate(-50%, -50%);
-        /* Offset the loader to the exact center */
-        z-index: 1000;
-        /* Ensure it's above other content */
-      }
-
-      .loader-inner {
-        border: 5px solid #f3f3f3;
-        /* Light grey border */
-        border-top: 5px solid #3498db;
-        /* Blue border top */
-        border-radius: 50%;
-        width: 100px;
-        height: 100px;
-        animation: spin 2s linear infinite;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
+        body, html, #timeseriesPlot {
+            width: 100%; height: 100%; margin: 0; padding: 0;
         }
-
-        100% {
-          transform: rotate(360deg);
+        .loader {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); z-index: 1000;
         }
-      }
-
-      .loader-text {
-        position: absolute;
-        top: 130%;
-        /* Position the text below the loader */
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 20px;
-        /* Large text size */
-        color: #000;
-      }
+        .loader-inner {
+            border: 5px solid #f3f3f3; border-top: 5px solid #3498db;
+            border-radius: 50%; width: 100px; height: 100px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loader-text {
+            position: absolute; top: 130%; left: 50%;
+            transform: translateX(-50%); font-size: 20px; color: #000;
+        }
     </style>
-  </head>
-
-  <body>
+</head>
+<body>
     <div class="loader" id="loader">
-      <div class="loader-inner"></div>
-      <div class="loader-text">Loading...</div>
+        <div class="loader-inner"></div>
+        <div class="loader-text">Loading...</div>
     </div>
     <div id="timeseriesPlot"></div>
-
     <script>
-      document.getElementById("timeseriesPlot").style.display = "none";
-      // Parse CSV string
-      Papa.parse("https://thechesirecat.github.io/recTrack/output.csv", {
-        download: true,
-        header: true,
-        dynamicTyping: true,
-        complete: function (results) {
-          document.getElementById("loader").style.display = "none";
+        document.getElementById("timeseriesPlot").style.display = "none";
+        Papa.parse("https://thechesirecat.github.io/recTrack/output.csv", {
+            download: true, header: true, dynamicTyping: true,
+            complete: function (results) {
+                document.getElementById("loader").style.display = "none";
+                var data = results.data;
+                document.getElementById("timeseriesPlot").style.display = "block";
+                var dataByLocation = {};
+                var minDate = new Date();
+                var maxDate = new Date(0);
+                data.forEach(function (row) {
+                    row.updated = new Date(row.updated);
+                    if (!(row.location_name in dataByLocation)) {
+                        dataByLocation[row.location_name] = [];
+                    }
+                    dataByLocation[row.location_name].push(row);
+                    if (row.updated < minDate) { minDate = row.updated; }
+                    if (family.updated > maxDate) { maxDate = row.updated; }
+                });
 
-          var data = results.data;
-          document.getElementById("timeseriesPlot").style.display = "block";
-
-          // Group data by location
-          var dataByLocation = {};
-          var minDate = new Date();
-          var maxDate = new Date(0);
-          data.forEach(function (row) {
-            row.updated = new Date(row.updated); // Convert to Date
-            if (!(row.location_name in dataByLocation)) {
-              dataByLocation[row.location_name] = [];
-            }
-            dataByLocation[row.location_name].push(row);
-
-            if (row.updated < minDate) {
-              minDate = row.updated;
-            }
-            if (row.updated > maxDate) {
-              maxDate = row.updated;
-            }
-          });
-
-          // Prepare data for Plotly
-          var traces = Object.keys(dataByLocation).map(function (location) {
-            return {
-              x: dataByLocation[location].map((row) => row.updated),
-              y: dataByLocation[location].map((row) => row.last_count),
-              type: "scatter",
-              name: location,
-            };
-          });
-          minDate = new Date("2023-07-19T18:50:00");
-          
-          console.log([minDate, maxDate]);
-          function addDays(date, days) {
-            var result = new Date(date);
-            result.setDate(result.getDate() + days);
-            return result;
-          }
-
-          var dateMarks = [];
-          for (var d = new Date(minDate); d <= maxDate; d = addDays(d, 1)) {
-            dateMarks.push(new Date(d));
-          }
-
-          function isWeekend(date) {
-            var dayOfWeek = date.getDay();
-            return dayOfWeek === 6 || dayOfWeek === 0; // 6 = Saturday, 0 = Sunday
-          }
-
-          var shapes = [];
-          dateMarks.forEach(function (date) {
-            var endDate = addDays(date, 1);
-            var color = isWeekend(date) ? "#ffcccb" : "#d3d3d3"; // Light red for weekends, light grey for weekdays
-
-            shapes.push({
-              type: "rect",
-              xref: "x",
-              yref: "paper",
-              x0: date.toISOString(),
-              y0: 0,
-              x1: endDate.toISOString(),
-              y1: 1,
-              fillcolor: color,
-              opacity: 0.3,
-              line: {
-                width: 0,
-              },
-            });
-          });
-
-          var layout = {
-            title: "Last Count Timeseries by Location",
-            xaxis: {
-              range: [minDate, maxDate],
-              type: "date",
+                var traces = Object.keys(dataByLocation).map(function (location) {
+                    var dates = dataByLocation[location].map(row => row.updated);
+                    var counts = dataByLocation[location].map(row => row.last_count);
+                    var movingAvg = counts.map((_, idx, arr) => {
+                        var window = arr.slice(Math.max(0, idx - 6), idx + 1);
+                        return window.reduce((a, b) => a + b, 0) / window.length;
+                    });
+                    return [
+                        {
+                            x: dates, y: counts, type: 'scatter',
+                            mode: 'lines+markers', name: location + ' - Raw', opacity: 0.5,
+                        },
+                        {
+                            x: dates, y: movingAvg, type: 'scatter',
+                            mode: 'lines', name: location + ' - 7 Day Avg',
+                            line: { color: 'red' }
+                        }
+                    ];
+                }).flat();
+                var layout = {
+                    title: "Last Count Timeseries by Location",
+                    xaxis: { range: [minDate, maxDate], type: "date" },
+                    yaxis: { type: "linear", autorange: true },
+                    shapes: shapes,
+                };
+                Plotly.newPlot("timeseriesPlot", traces, layout);
             },
-            yaxis: {
-              type: "linear",
-              autorange: true,
-            },
-            shapes: shapes,
-          };
-
-          // Plot data
-          Plotly.newPlot("timeseriesPlot", traces, layout);
-        },
-      });
+        });
     </script>
-  </body>
+</body>
 </html>
