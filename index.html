@@ -50,7 +50,7 @@
                         dataByLocation[row.location_name] = [];
                     }
                     dataByLocation[row.location_name].push(row);
-                    if (row.updated > maxStackDate) { maxDate = row.updated; }
+                    if (row.updated > maxDate) { maxDate = row.updated; }
                 });
 
                 var traces = Object.keys(dataByLocation).map(function (location) {
