@@ -87,14 +87,22 @@
                 return window.reduce((a, b) => a + b, 0) / window.length;
               });
               return [
+                // {
+                //   x: dates,
+                //   y: counts,
+                //   type: "scatter",
+                //   mode: "lines+markers",
+                //   name: location + " - Raw",
+                //   opacity: 0.5,
+                // },
                 {
-                  x: dates,
-                  y: counts,
-                  type: "scatter",
-                  mode: "lines+markers",
-                  name: location + " - Raw",
-                  opacity: 0.5,
-                },
+                            x: dates,
+                            y: movingAvg, 
+                            type: 'scatter',
+                            mode: 'lines', 
+                            name: location + ' - 7 Day Avg',
+                            opacity: 0.5,
+                        }
               ];
             })
             .flat();
