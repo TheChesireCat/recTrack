@@ -14,14 +14,15 @@ This project is a scraper/tracker powered by GitHub Actions. The code is designe
 
 ## Why?
 
-This is a personal project to practice using GitHub Actions and web scraping. 
+This is a personal project to practice using GitHub Actions and web scraping.
 
 **Note:** I don't commit personal code nearly as much as I should. The frequency of GitHub Actions running on this project may make it seem like I am more active on GitHub than I actually am. My contributions reflect the automation of the tracker, not personal code commits.
 
-## Suggestions?
+## Issue with Cloning the Repo
 
-If you have any suggestions or improvements for the code, feel free to reach out or open a pull request! Contributions are welcome.
+Because the GitHub Action runs very frequently (often multiple times a day), the repository has accumulated a large number of commits. If you're trying to clone this repo, it may take a long time due to the size of the Git history from scraped data being committed over time.
 
----
-
-**Disclaimer:** This project is not officially associated with Northeastern University or its recreation website.
+### Suggested Solutions:
+- **Shallow Clone:** If you just need the latest version of the code and don't need the full commit history, you can perform a shallow clone using the `--depth` option:
+  ```bash
+  git clone --depth 1 https://github.com/thechesirecat/recTrack.git
