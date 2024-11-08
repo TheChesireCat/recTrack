@@ -8,8 +8,8 @@ data['updated'] = pd.to_datetime(data['updated'])
 
 # Update location_name values for Studio A and Studio B with 'Marino Center' prefix
 data['location_name'] = data['location_name'].replace({
-    'Studio A - 7 Day Avg': 'Marino Center - Studio A - 7 Day Avg',
-    'Studio B - 7 Day Avg': 'Marino Center - Studio B - 7 Day Avg'
+    'Studio A': 'Marino Center - Studio A',
+    'Studio B': 'Marino Center - Studio B'
 })
 
 # Save updated data to CSV
