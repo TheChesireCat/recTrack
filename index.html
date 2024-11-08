@@ -9,7 +9,7 @@
       html,
       #timeseriesPlot {
         width: 100%;
-        height: 100%;
+        height: 70%;
         margin: 0;
         padding: 0;
       }
@@ -67,16 +67,19 @@
           var maxDate = new Date(0);
           data.forEach(function (row) {
             row.updated = new Date(row.updated);
-            if (!(row.location_name in dataByLocation)) {
+            if (row.location_name && !(row.location_name in dataByLocation)) {
               dataByLocation[row.location_name] = [];
             }
-            dataByLocation[row.location_name].push(row);
-            if (row.updated > maxDate) {
-              maxDate = row.updated;
+            if (row.location_name) {
+              dataByLocation[row.location_name].push(row);
+              if (row.updated > maxDate) {
+                maxDate = row.updated;
+              }
             }
           });
 
           var traces = Object.keys(dataByLocation)
+            .filter((location) => location) // Filter out undefined locations
             .map(function (location) {
               var dates = dataByLocation[location].map((row) => row.updated);
               var counts = dataByLocation[location].map(
@@ -87,29 +90,49 @@
                 return window.reduce((a, b) => a + b, 0) / window.length;
               });
               return [
-                // {
-                //   x: dates,
-                //   y: counts,
-                //   type: "scatter",
-                //   mode: "lines+markers",
-                //   name: location + " - Raw",
-                //   opacity: 0.5,
-                // },
                 {
-                            x: dates,
-                            y: movingAvg, 
-                            type: 'scatter',
-                            mode: 'lines', 
-                            name: location + ' - 7 Day Avg',
-                            opacity: 0.5,
-                        }
+                  x: dates,
+                  y: movingAvg,
+                  type: "scatter",
+                  mode: "lines",
+                  name: location + " - 7 Day Avg",
+                  opacity: 0.5,
+                },
               ];
             })
             .flat();
+
+          // Generate weekend shapes (light grey background)
+          var weekendShapes = [];
+          var currentDate = new Date(minDate);
+          while (currentDate <= maxDate) {
+            var day = currentDate.getDay();
+            if (day === 6 || day === 0) {
+              // Saturday or Sunday
+              var startDate = new Date(currentDate);
+              var endDate = new Date(currentDate);
+              endDate.setDate(endDate.getDate() + (day === 6 ? 1 : 0)); // Saturday spans to Sunday
+              weekendShapes.push({
+                type: "rect",
+                x0: startDate.toISOString(),
+                x1: endDate.toISOString(),
+                y0: 0,
+                y1: 1,
+                xref: "x",
+                yref: "paper",
+                fillcolor: "lightgrey",
+                opacity: 0.4,
+                line: { width: 0 },
+              });
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+
           var layout = {
             title: "Last Count Timeseries by Location",
             xaxis: { range: [minDate, maxDate], type: "date" },
             yaxis: { type: "linear", autorange: true },
+            shapes: weekendShapes,
           };
           Plotly.newPlot("timeseriesPlot", traces, layout);
         },
