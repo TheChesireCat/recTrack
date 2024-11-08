@@ -1,28 +1,29 @@
 # recTrack
 
-A simple tracker for Northeastern University's recreation website: [recreation.northeastern.edu](https://thechesirecat.github.io/recTrack/index.html)
+A lightweight tracker for Northeastern University's recreation website: [recreation.northeastern.edu](https://thechesirecat.github.io/recTrack/index.html)
 
 ## Overview
 
-This project is a scraper/tracker powered by GitHub Actions. The code is designed to be minimal and lightweight, serving the purpose of tracking updates on the Northeastern recreation page.
+recTrack is a GitHub Actions-based scraper designed to track updates on the Northeastern recreation page. The code is minimalistic, focusing solely on fetching and tracking changes to the site.
 
 ## How It Works
 
-- The project uses GitHub Actions to automate the scraping process.
-- Data is periodically fetched from the [Northeastern recreation website](https://recreation.northeastern.edu).
-- You can visit the tracker URL to see the updates: [recTrack](https://thechesirecat.github.io/recTrack/index.html).
+- GitHub Actions automates the scraping process on a regular schedule.
+- Data is fetched periodically from the [Northeastern recreation website](https://recreation.northeastern.edu).
+- Visit [recTrack](https://thechesirecat.github.io/recTrack/index.html) to view updates.
 
-## Why?
+## Motivation
 
-This is a personal project to practice using GitHub Actions and web scraping.
+This project serves as a practice in using GitHub Actions and web scraping. Since the recreation website only displays current values without historical records, this tracker provides historical data for forecasting and other analytics.
 
-**Note:** I don't commit personal code nearly as much as I should. The frequency of GitHub Actions running on this project may make it seem like I am more active on GitHub than I actually am. My contributions reflect the automation of the tracker, not personal code commits.
+**Note:** The frequent GitHub Actions updates might make it seem like I’m highly active on GitHub, but most contributions reflect the tracker’s automation rather than personal code commits.
 
-## Issue with Cloning the Repo
+## Cloning the Repository
 
-Because the GitHub Action runs very frequently (often multiple times a day), the repository has accumulated a large number of commits. If you're trying to clone this repo, it may take a long time due to the size of the Git history from scraped data being committed over time.
+The frequent GitHub Action runs have resulted in a large commit history, which can make cloning the repository slow.
 
-### Suggested Solutions:
-- **Shallow Clone:** If you just need the latest version of the code and don't need the full commit history, you can perform a shallow clone using the `--depth` option:
+### Solution:
+- **Shallow Clone:** If you only need the latest version, perform a shallow clone to limit the download to recent commits:
   ```bash
   git clone --depth 1 https://github.com/thechesirecat/recTrack.git
+  ```
