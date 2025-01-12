@@ -6,7 +6,7 @@ import re
 import pytz
 
 base_url = "https://recreation.northeastern.edu/"
-base_content = requests.get(base_url).content
+base_content = requests.get(base_url,verify=False).content
 base_soup = bs(base_content, "html.parser")
 embed_elements = base_soup.find_all("embed")
 
